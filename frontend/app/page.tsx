@@ -9,8 +9,18 @@ function newId() {
   return Math.random().toString(36).slice(2);
 }
 
+const STORAGE_KEY = "agentic-rag-chat";
+
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,10 +39,27 @@ export default function Home() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch {
+      // ignore storage errors (e.g. private browsing mode)
+    }
+  }, [messages]);
+
+  function handleNewChat() {
+    setMessages([]);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const question = input.trim();
-    if (!question || busy) return;
+    if (!question) return;
 
     setError(null);
     setInput("");
@@ -73,11 +100,16 @@ export default function Home() {
           <span className="mark">Agentic RAG</span>
           <span className="sub">self-correcting document assistant</span>
         </div>
-        <div className="status">
-          <span
-            className={`status-dot ${online === null ? "" : online ? "online" : "offline"}`}
-          />
-          {online === null ? "checking" : online ? "backend online" : "backend offline"}
+        <div className="header-actions">
+          <button className="new-chat-btn" onClick={handleNewChat} type="button">
+            New chat
+          </button>
+          <div className="status">
+            <span
+              className={`status-dot ${online === null ? "" : online ? "online" : "offline"}`}
+            />
+            {online === null ? "checking" : online ? "backend online" : "backend offline"}
+          </div>
         </div>
       </header>
 
@@ -103,11 +135,10 @@ export default function Home() {
           placeholder="> ask something about your documents"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={busy}
           aria-label="Ask a question"
         />
-        <button type="submit" disabled={busy || !input.trim()}>
-          {busy ? "…" : "Send"}
+        <button type="submit" disabled={!input.trim()}>
+          Send
         </button>
       </form>
     </div>
