@@ -26,7 +26,7 @@ from qdrant_client.models import Distance, VectorParams
 # --- Config -----------------------------------------------------------------
 
 CHAT_MODEL = "gemini-2.0-flash"
-EMBEDDING_MODEL = "models/text-embedding-004"
+EMBEDDING_MODEL = "models/embedding-001"
 VISION_MODEL = "gemini-2.0-flash"
 EMBEDDING_DIM = 768
 
