@@ -26,7 +26,7 @@ from qdrant_client.models import Distance, VectorParams
 # --- Config -----------------------------------------------------------------
 
 CHAT_MODEL = "gemini-2.0-flash"
-EMBEDDING_MODEL = "models/embedding-001"
+EMBEDDING_MODEL = "models/gemini-embedding-001"
 VISION_MODEL = "gemini-2.0-flash"
 EMBEDDING_DIM = 768
 
@@ -47,7 +47,7 @@ def get_vision_llm() -> ChatGoogleGenerativeAI:
 
 
 def get_embeddings() -> GoogleGenerativeAIEmbeddings:
-    return GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL)
+    return GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, output_dimensionality=EMBEDDING_DIM)
 
 
 _qdrant_client = QdrantClient(path=QDRANT_PATH)
