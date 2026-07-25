@@ -15,7 +15,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import END, StateGraph
@@ -25,29 +25,29 @@ from qdrant_client.models import Distance, VectorParams
 
 # --- Config -----------------------------------------------------------------
 
-CHAT_MODEL = "gpt-4o-mini"
-EMBEDDING_MODEL = "text-embedding-3-small"
-VISION_MODEL = "gpt-4o-mini"
-EMBEDDING_DIM = 1536
+CHAT_MODEL = "gemini-2.0-flash"
+EMBEDDING_MODEL = "models/text-embedding-004"
+VISION_MODEL = "gemini-2.0-flash"
+EMBEDDING_DIM = 768
 
 QDRANT_PATH = os.getenv("QDRANT_PATH", "./qdrant_db")
-QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "agentic_rag_openai")
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "agentic_rag_gemini")
 TOP_K = int(os.getenv("TOP_K", "4"))
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", "3"))
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1000"))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
 
 
-def get_llm(temperature: float = 0.0) -> ChatOpenAI:
-    return ChatOpenAI(model=CHAT_MODEL, temperature=temperature)
+def get_llm(temperature: float = 0.0) -> ChatGoogleGenerativeAI:
+    return ChatGoogleGenerativeAI(model=CHAT_MODEL, temperature=temperature)
 
 
-def get_vision_llm() -> ChatOpenAI:
-    return ChatOpenAI(model=VISION_MODEL, temperature=0.0)
+def get_vision_llm() -> ChatGoogleGenerativeAI:
+    return ChatGoogleGenerativeAI(model=VISION_MODEL, temperature=0.0)
 
 
-def get_embeddings() -> OpenAIEmbeddings:
-    return OpenAIEmbeddings(model=EMBEDDING_MODEL)
+def get_embeddings() -> GoogleGenerativeAIEmbeddings:
+    return GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL)
 
 
 _qdrant_client = QdrantClient(path=QDRANT_PATH)

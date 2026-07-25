@@ -11,3 +11,4 @@ qdrant-client
 tavily-python
 pymupdf
 pydantic
+langchain-google-genai
